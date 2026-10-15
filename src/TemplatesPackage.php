@@ -12,16 +12,17 @@ class TemplatesPackage extends BasePackage
 {
     use AsSingleton;
 
-    // The services take other services by constructor injection, which the object
-    // instantiator's parameter resolvers provide; VariableCompiler reads entity metadata.
+    // VariableCompiler reads entity metadata.
     public function dependencies(): array
     {
         return [
             EntityManagerPackage::instance(),
-            ObjectInstantiatorPackage::instance(),
         ];
     }
 
+    // The tests build the services themselves, so they need the object instantiator's
+    // parameter resolvers for constructor injection; an application registers those
+    // already.
     public function devDependencies(): array
     {
         return [
