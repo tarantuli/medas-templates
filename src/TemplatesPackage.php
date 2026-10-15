@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Medas\Placeholder;
+namespace Medas\Templates;
 
 use Medas\Core\{AsSingleton, BasePackage};
 
-class PlaceholderPackage extends BasePackage
+class TemplatesPackage extends BasePackage
 {
     use AsSingleton;
 

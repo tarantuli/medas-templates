@@ -1,8 +1,8 @@
 {
-  "name": "morphp/medas-placeholder",
-  "description": "Medas placeholder",
+  "name": "morphp/medas-templates",
+  "description": "Medas templates",
   "keywords": [
-    "placeholder"
+    "backend"
   ],
   "authors": [
     {
@@ -22,12 +22,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Medas\\Placeholder\\": "src/"
+      "Medas\\Templates\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Medas\\PlaceholderTest\\": "tests/"
+      "Medas\\TemplatesTest\\": "tests/"
     }
   }
 }

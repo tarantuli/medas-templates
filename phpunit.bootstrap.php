@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Medas\ObjectInstantiator\ObjectInstantiator;
-use Medas\Placeholder\PlaceholderPackage;
 use Medas\ServiceManager\{ServiceConfigBuilder, ServiceManager};
+use Medas\Templates\TemplatesPackage;
 
 chdir(__DIR__);
 
@@ -12,7 +12,7 @@ new ServiceManager(function (): ServiceConfigBuilder {
     $config = new ServiceConfigBuilder(ObjectInstantiator::class);
 
     $config->addPackages([
-        PlaceholderPackage::instance(),
+        TemplatesPackage::instance(),
     ]);
 
     return $config;
