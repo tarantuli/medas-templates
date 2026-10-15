@@ -130,7 +130,18 @@ class Subscription implements HasId
 - A marked collection (a collection property or a back-reference) throws
   `CollectionCannotBeATemplateVariable`: it has no single entity to take values from.
 - A null value stays null, so the resolver can tell "no value" from an unknown key.
+- A marked reference that is null still gives its keys, each null, so its tokens
+  render empty instead of failing on an unknown key.
 - Any entity can be compiled; one with nothing marked gives an empty map.
+
+**Describing what a template can use**, for an editor:
+
+- `VariableCompiler::describe(Subscription::class)` lists the keys `compile()` would
+  produce, from the metadata alone, as `Descriptions\VariableDescription` (key, the
+  type's short name, whether it can be empty).
+- `PipeManager::describe()` lists every pipe as `Descriptions\PipeDescription`, with
+  its arguments in order (`ArgumentDescription`: name, type, required, variadic,
+  default), read from the same `apply()` signatures it binds to.
 
 **Rendering:**
 

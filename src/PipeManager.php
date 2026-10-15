@@ -22,6 +22,46 @@ readonly class PipeManager
         $this->pipes = new CachedImplementorList(VariablePipe::class);
     }
 
+    /**
+     * Every pipe with the arguments its apply() takes after the value and the locale,
+     * for an author who writes a template. Read from the same signatures apply() binds
+     * to, so the description cannot drift from what a pipe accepts.
+     *
+     * @return Descriptions\PipeDescription[]
+     */
+    public function describe(): array
+    {
+        $descriptions = [];
+
+        foreach ($this->pipes->get() as $pipe) {
+            /** @var VariablePipe $pipe */
+            $parameters = array_slice(new \ReflectionMethod($pipe, 'apply')->getParameters(), 2);
+
+            $descriptions[] = new Descriptions\PipeDescription(
+                $pipe->name(),
+                array_map($this->describeArgument(...), $parameters),
+            );
+        }
+
+        usort($descriptions, fn($a, $b) => $a->name <=> $b->name);
+
+        return $descriptions;
+    }
+
+    private function describeArgument(\ReflectionParameter $parameter): Descriptions\ArgumentDescription
+    {
+        $type = $parameter->getType();
+        $hasDefault = $parameter->isDefaultValueAvailable();
+
+        return new Descriptions\ArgumentDescription(
+            $parameter->name,
+            $type instanceof \ReflectionNamedType ? $type->getName() : 'string',
+            !$hasDefault && !$parameter->isVariadic(),
+            $parameter->isVariadic(),
+            $hasDefault ? $parameter->getDefaultValue() : null,
+        );
+    }
+
     /** @param string[] $arguments */
     public function apply(string $name, mixed $value, string $locale, array $arguments): string
     {
