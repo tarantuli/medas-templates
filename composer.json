@@ -1,8 +1,9 @@
 {
   "name": "morphp/medas-templates",
-  "description": "Medas templates",
+  "description": "Medas templates: {{ key | pipe:argument }} interpolation with typed, localised pipes, and entities compiled into template variables",
   "keywords": [
-    "backend"
+    "templating",
+    "rendering"
   ],
   "authors": [
     {
@@ -12,7 +13,10 @@
   ],
   "type": "library",
   "require": {
-    "morphp/medas-core": "^4",
+    "ext-ctype": "*",
+    "ext-intl": "*",
+    "morphp/medas-core": "^4.4",
+    "morphp/medas-entity-manager": "^3.10",
     "php": "^8.4"
   },
   "require-dev": {
