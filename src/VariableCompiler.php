@@ -61,7 +61,7 @@ readonly class VariableCompiler
                     $this->addVariables(
                         $variables,
                         $property->name,
-                        $value,
+                        $this->loaded($value),
                         followReferences: false
                     );
                 }
@@ -76,6 +76,15 @@ readonly class VariableCompiler
                 $variables[$prefix . ':' . $property->name] = $value;
             }
         }
+    }
+
+    // A reference is often a lazy object, whose properties read as uninitialised through
+    // reflection until it is loaded. Loading it is a no-op for an object that is not lazy.
+    private function loaded(HasId $entity): HasId
+    {
+        new \ReflectionClass($entity)->initializeLazyObject($entity);
+
+        return $entity;
     }
 
     // The keys of a marked reference that is null: known, so they render empty.
