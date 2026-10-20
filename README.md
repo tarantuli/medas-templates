@@ -35,6 +35,7 @@ formatting is the template's job, through pipes. The rules are strict on purpose
 | `VariablePipe`        | The interface a pipe implements; its `apply()` is found by reflection (see below)  |
 | `Escaping`            | How a render call escapes its output: `None` or `Html`                             |
 | `Interfaces\HasLabel` | Implemented by an enum (or any value) to give the `enum` pipe its label per locale |
+| `Interfaces\LabelProvider` | Optional, registered by an application that keeps labels as data: asked first by the `enum` pipe, per case and locale |
 
 **Pipes:**
 
@@ -45,7 +46,7 @@ formatting is the template's job, through pipes. The rules are strict on purpose
 | `percent`  | a whole-number percentage (21 = 21%) | `{{ vat \| percent }}`, `percent:1`                   | `21%`                |
 | `date`     | a `Medas\Core\Date` or a moment      | `{{ start \| date:long }}`                            | `31 maart 2026`      |
 | `datetime` | a `\DateTimeInterface`               | `{{ createdAt \| datetime }}`, `datetime:long:medium` | `31 mrt 2026, 14:05` |
-| `enum`     | an enum implementing `HasLabel`      | `{{ state \| enum }}`                                 | its label            |
+| `enum`     | an enum with a label (see below)     | `{{ state \| enum }}`                                 | its label            |
 | `yesno`    | a bool                               | `{{ autoRenew \| yesno:Ja:Nee }}`                     | `Ja`                 |
 | `plural`   | an int count                         | `{{ months \| plural:one=# maand:other=# maanden }}`  | `12 maanden`         |
 
@@ -53,9 +54,10 @@ formatting is the template's job, through pipes. The rules are strict on purpose
   unknown style throws. `date` defaults to `medium`; `datetime` to `medium` for the
   date and `short` for the time. A moment is shown in its own time zone.
 - `currency` defaults to `EUR`. `percent` defaults to no decimals.
-- `enum` calls `label($locale)` on the enum (`Medas\Templates\Interfaces\HasLabel`).
-  A case name or backing value is not text for a reader, so an enum without labels
-  is refused.
+- `enum` asks a registered `Medas\Templates\Interfaces\LabelProvider` first; when
+  there is none, or it returns null, it calls `label($locale)` on the enum
+  (`Medas\Templates\Interfaces\HasLabel`). A case name or backing value is not text
+  for a reader, so an enum with neither is refused.
 - `yesno` requires both words: content is written per locale, so the template knows
   its language, and a default would put English in a Dutch text.
 - `plural` follows the locale's plural rules (ICU's, like Angular's i18n syntax).

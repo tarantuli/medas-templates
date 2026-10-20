@@ -14,48 +14,63 @@ class TemplateResolverTest extends TestCase
 {
     public function testAStringRendersWithoutAPipe(): void
     {
-        self::assertSame('hello', $this->resolver()->render('{{ x }}', ['x' => 'hello'], [], 'nl-NL', Escaping::None));
+        self::assertSame(
+            'hello',
+            $this->resolver()->render('{{ x }}', ['x' => 'hello'], [], 'nl-NL', Escaping::None)
+        );
     }
 
     public function testTextAroundTokensIsKept(): void
     {
         self::assertSame(
             'Dear Ann, welcome.',
-            $this->resolver()->render('Dear {{name}}, {{ greeting }}.', ['name' => 'Ann', 'greeting' => 'welcome'], [], 'nl-NL', Escaping::None)
+            $this->resolver()->render(
+                'Dear {{name}}, {{ greeting }}.',
+                ['name' => 'Ann', 'greeting' => 'welcome'],
+                [],
+                'nl-NL',
+                Escaping::None
+            )
         );
     }
 
     public function testADefaultFillsAGap(): void
     {
-        self::assertSame('fallback', $this->resolver()->render('{{ x }}', [], ['x' => 'fallback'], 'nl-NL', Escaping::None));
+        self::assertSame(
+            'fallback',
+            $this->resolver()->render('{{ x }}', [], ['x' => 'fallback'], 'nl-NL', Escaping::None)
+        );
     }
 
     public function testAValueBeatsADefault(): void
     {
         self::assertSame(
             'real',
-            $this->resolver()->render('{{ x }}', ['x' => 'real'], ['x' => 'fallback'], 'nl-NL', Escaping::None)
+            $this->resolver()->render(
+                '{{ x }}',
+                ['x' => 'real'],
+                ['x' => 'fallback'],
+                'nl-NL',
+                Escaping::None
+            )
         );
     }
 
     public function testANonStringWithoutAPipeIsRefused(): void
     {
         $this->expectException(\RuntimeException::class);
-
         $this->resolver()->render('{{ x }}', ['x' => 4999], [], 'nl-NL', Escaping::None);
     }
 
     public function testAnUnknownKeyIsRefused(): void
     {
         $this->expectException(\RuntimeException::class);
-
         $this->resolver()->render('{{ x }}', [], [], 'nl-NL', Escaping::None);
     }
 
     public function testAnUnknownPipeIsRefused(): void
     {
         $this->expectException(\RuntimeException::class);
-
         $this->resolver()->render('{{ x | nope }}', ['x' => 'y'], [], 'nl-NL', Escaping::None);
     }
 
@@ -64,7 +79,13 @@ class TemplateResolverTest extends TestCase
     {
         self::assertSame(
             '<p>Smith &amp; &lt;Sons&gt; &quot;Ltd&quot; &apos;s</p>',
-            $this->resolver()->render('<p>{{ name }}</p>', ['name' => 'Smith & <Sons> "Ltd" \'s'], [], 'nl-NL', Escaping::Html)
+            $this->resolver()->render(
+                '<p>{{ name }}</p>',
+                ['name' => 'Smith & <Sons> "Ltd" \'s'],
+                [],
+                'nl-NL',
+                Escaping::Html
+            )
         );
     }
 
@@ -73,7 +94,13 @@ class TemplateResolverTest extends TestCase
     {
         self::assertSame(
             'A &amp; B',
-            $this->resolver()->render('{{ flag | yesno:A & B:C }}', ['flag' => true], [], 'nl-NL', Escaping::Html)
+            $this->resolver()->render(
+                '{{ flag | yesno:A & B:C }}',
+                ['flag' => true],
+                [],
+                'nl-NL',
+                Escaping::Html
+            )
         );
     }
 
@@ -81,7 +108,13 @@ class TemplateResolverTest extends TestCase
     {
         self::assertSame(
             '<b>bold</b>',
-            $this->resolver()->render('{{ html | raw }}', ['html' => '<b>bold</b>'], [], 'nl-NL', Escaping::Html)
+            $this->resolver()->render(
+                '{{ html | raw }}',
+                ['html' => '<b>bold</b>'],
+                [],
+                'nl-NL',
+                Escaping::Html
+            )
         );
     }
 
@@ -89,7 +122,6 @@ class TemplateResolverTest extends TestCase
     public function testRawDoesNotMakeANonStringRenderable(): void
     {
         $this->expectException(\RuntimeException::class);
-
         $this->resolver()->render('{{ x | raw }}', ['x' => 4999], [], 'nl-NL', Escaping::Html);
     }
 
@@ -97,7 +129,13 @@ class TemplateResolverTest extends TestCase
     {
         self::assertSame(
             'Smith & <Sons>',
-            $this->resolver()->render('{{ name }}', ['name' => 'Smith & <Sons>'], [], 'nl-NL', Escaping::None)
+            $this->resolver()->render(
+                '{{ name }}',
+                ['name' => 'Smith & <Sons>'],
+                [],
+                'nl-NL',
+                Escaping::None
+            )
         );
     }
 

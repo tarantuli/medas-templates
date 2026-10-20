@@ -9,7 +9,7 @@ use Medas\Templates\TemplatesPackage;
 chdir(__DIR__);
 
 new ServiceManager(function (): ServiceConfigBuilder {
-    $config = new ServiceConfigBuilder(ObjectInstantiator::class);
+    $config = new ServiceConfigBuilder(ObjectInstantiator::class, isDev: true);
 
     $config->addPackages([
         TemplatesPackage::instance(),
