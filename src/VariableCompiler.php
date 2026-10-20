@@ -52,7 +52,7 @@ readonly class VariableCompiler
             $isSet = $property->reflection->isInitialized($entity);
             $value = $isSet ? $property->reflection->getValue($entity) : null;
 
-            if ($property->type instanceof Relation) {
+            if ($this->isReference($property)) {
                 if (!$followReferences) {
                     continue;
                 }
@@ -91,7 +91,7 @@ readonly class VariableCompiler
     private function addNullVariables(array &$variables, string $prefix, string $className): void
     {
         foreach ($this->markedProperties($className) as $property) {
-            if (!$property->type instanceof Relation) {
+            if (!$this->isReference($property)) {
                 $variables[$prefix . ':' . $property->name] = null;
             }
         }
@@ -128,7 +128,7 @@ readonly class VariableCompiler
     ): void
     {
         foreach ($this->markedProperties($className) as $property) {
-            if ($property->type instanceof Relation) {
+            if ($this->isReference($property)) {
                 if ($followReferences) {
                     $this->addDescriptions(
                         $descriptions,
@@ -192,6 +192,14 @@ readonly class VariableCompiler
                 );
             }
         }
+    }
+
+    // Whether a property points at another entity, to be followed. The entity manager
+    // types an enum property as a relation to the enum, but an enum case is a value,
+    // rendered with the enum pipe.
+    private function isReference(Property $property): bool
+    {
+        return $property->type instanceof Relation && !enum_exists($property->type->entity);
     }
 
     // The type as an author reads it: "int", "string", "Date", an enum's short name.
