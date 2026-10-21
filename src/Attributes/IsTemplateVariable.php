@@ -15,9 +15,18 @@ namespace Medas\Templates\Attributes;
 // marked reference on that referenced entity is not followed on. A collection cannot
 // be marked; compiling an entity that marks one throws.
 //
+// isMinorUnits says that an int holds an amount in minor units (cents). The value does
+// not say so itself, and an editor that suggests a pipe needs to tell an amount
+// (currency, money) from a count (number, integer); see VariableDescription.
+//
 // Multi-hop could later be an argument here naming the sub-paths to follow from this
 // reference; nothing needs it yet.
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-final class IsTemplateVariable
+final readonly class IsTemplateVariable
 {
+    public function __construct(
+        public bool $isMinorUnits = false,
+    )
+    {
+    }
 }

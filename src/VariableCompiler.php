@@ -146,6 +146,7 @@ readonly class VariableCompiler
                 $prefix . ':' . $property->name,
                 $this->typeName($property),
                 $viaNullableReference || $property->isNullable,
+                $property->attribute(Attributes\IsTemplateVariable::class)->isMinorUnits,
             );
         }
     }

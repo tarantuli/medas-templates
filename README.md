@@ -49,11 +49,18 @@ formatting is the template's job, through pipes. The rules are strict on purpose
 | `enum`     | an enum with a label (see below)     | `{{ state \| enum }}`                                 | its label            |
 | `yesno`    | a bool                               | `{{ autoRenew \| yesno:Ja:Nee }}`                     | `Ja`                 |
 | `plural`   | an int count                         | `{{ months \| plural:one=# maand:other=# maanden }}`  | `12 maanden`         |
+| `money`    | an int of minor units (cents)        | `{{ amount \| money }}`, `money:,`                    | `49.99`              |
+| `integer`  | an int                               | `{{ quantity \| integer }}`                           | `2923249`            |
+| `dateformat` | a `Medas\Core\Date` or a moment    | `{{ date \| dateformat }}`, `dateformat:dd-MM-yyyy`  | `2026-03-31`         |
 
 - `date` and `datetime` take the styles `short`, `medium`, `long` and `full`; an
   unknown style throws. `date` defaults to `medium`; `datetime` to `medium` for the
   date and `short` for the time. A moment is shown in its own time zone.
 - `currency` defaults to `EUR`. `percent` defaults to no decimals.
+- `money`, `integer` and `dateformat` are for text a program reads, such as a CSV: the
+  same output in every locale (no currency sign, no grouping, one fixed date format).
+  `money` takes the decimal separator (default `.`), `dateformat` an ICU pattern
+  (default `yyyy-MM-dd`); a pattern cannot hold `:`, so it has no time of day.
 - `enum` asks a registered `Medas\Templates\Interfaces\LabelProvider` first; when
   there is none, or it returns null, it calls `label($locale)` on the enum
   (`Medas\Templates\Interfaces\HasLabel`). A case name or backing value is not text
@@ -140,7 +147,9 @@ class Subscription implements HasId
 
 - `VariableCompiler::describe(Subscription::class)` lists the keys `compile()` would
   produce, from the metadata alone, as `Descriptions\VariableDescription` (key, the
-  type's short name, whether it can be empty).
+  type's short name, whether it can be empty, and whether an int holds an amount in
+  minor units: `#[IsTemplateVariable(isMinorUnits: true)]` declares that, as an int
+  cannot say so itself).
 - `PipeManager::describe()` lists every pipe as `Descriptions\PipeDescription`, with
   its arguments in order (`ArgumentDescription`: name, type, required, variadic,
   default), read from the same `apply()` signatures it binds to.

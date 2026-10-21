@@ -271,6 +271,58 @@ class PipesTest extends TestCase
         $this->render('{{ m | plural:one=# maand:other=# maanden }}', ['m' => '3'], 'nl-NL');
     }
 
+    public function testMoneyGivesAPlainDecimalInEveryLocale(): void
+    {
+        self::assertSame('2923.49', $this->render('{{ p | money }}', ['p' => 292349], 'nl-NL'));
+        self::assertSame('0.05', $this->render('{{ p | money }}', ['p' => 5], 'en-GB'));
+        self::assertSame('-12.50', $this->render('{{ p | money }}', ['p' => -1250], 'nl-NL'));
+    }
+
+    public function testMoneyTakesTheDecimalSeparatorAsAnArgument(): void
+    {
+        self::assertSame('49,99', $this->render('{{ p | money:, }}', ['p' => 4999], 'en-GB'));
+    }
+
+    public function testMoneyRefusesANonInteger(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->render('{{ p | money }}', ['p' => 49.99], 'nl-NL');
+    }
+
+    public function testIntegerGivesPlainDigitsInEveryLocale(): void
+    {
+        self::assertSame('2923249', $this->render('{{ n | integer }}', ['n' => 2923249], 'nl-NL'));
+        self::assertSame('-3', $this->render('{{ n | integer }}', ['n' => -3], 'en-GB'));
+    }
+
+    public function testIntegerRefusesAFloat(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->render('{{ n | integer }}', ['n' => 1.5], 'nl-NL');
+    }
+
+    public function testDateFormatDefaultsToIsoDate(): void
+    {
+        self::assertSame(
+            '2026-03-31',
+            $this->render('{{ d | dateformat }}', ['d' => new Date(2026, 3, 31)], 'nl-NL')
+        );
+    }
+
+    public function testDateFormatTakesAPattern(): void
+    {
+        self::assertSame(
+            '31-03-2026',
+            $this->render('{{ d | dateformat:dd-MM-yyyy }}', ['d' => new Date(2026, 3, 31)], 'en-GB')
+        );
+    }
+
+    public function testDateFormatRefusesANonDate(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->render('{{ d | dateformat }}', ['d' => '2026-03-31'], 'nl-NL');
+    }
+
     private function render(string $template, array $values, string $locale): string
     {
         return service(TemplateResolver::class)->render(
